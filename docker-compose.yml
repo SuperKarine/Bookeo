@@ -1,0 +1,63 @@
+services:
+  server:
+    build:
+      context: .
+    container_name: bookeo-server
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bookeo.rule=Host(`bookeo.ecoride-hauts-de-france.site`)"
+      - "traefik.http.routers.bookeo.entrypoints=web"
+      - "traefik.http.services.bookeo.loadbalancer.server.port=80"
+
+  db:
+    image: mariadb:10.11
+    container_name: bookeo-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      - bookeo-db-data:/var/lib/mysql
+    expose:
+      - "3306"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - web
+
+  mongo:
+    image: mongo
+    container_name: bookeo-mongo
+    restart: always  
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - bookeo-mongo-data:/data/db
+    expose:
+      - "27017"
+    networks:
+      - web
+
+volumes:
+  bookeo-db-data:
+  bookeo-mongo-data:
+
+networks:
+  web:
+    external: true
