@@ -3,10 +3,12 @@ name: Build, push, and deploy Docker image to the server
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   DOCKER_IMAGE_PRODUCTION_TAG: production
+  IMAGE_NAME: bookeo-final  
 
 jobs:
   build-and-push-image:
@@ -29,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}-final
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}  
           tags: ${{ env.DOCKER_IMAGE_PRODUCTION_TAG }}
 
       - name: 🐳 Build and push final image
@@ -55,7 +57,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
           source: docker-compose.yml
-          target: ~/bookeo/  
+          target: ~/bookeo/
           strip_components: 1
 
       - name: 🔄 Check and handle reboot if needed
@@ -86,10 +88,12 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
           script: |
+            echo "🔐 Logging into GHCR..."
+            echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "🐳 Pulling latest Docker image..."
-            docker pull ghcr.io/${{ github.repository }}-final:production
-            echo "📁 Switching to Bookeo directory..."  
-            cd ~/bookeo  
+            docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_IMAGE_PRODUCTION_TAG }}  # ← CORRIGÉ
+            echo "📁 Switching to Bookeo directory..."
+            cd ~/bookeo
             echo "🛑 Stopping existing containers..."
             docker compose down
             echo "🚀 Starting new containers..."
@@ -97,5 +101,5 @@ jobs:
             echo "🧹 Cleaning up unused images..."
             docker image prune -f
             echo "📦 Checking running containers:"
-            docker ps
-            echo "✅ Bookeo deployment completed successfully!"  
+            docker ps --filter "name=bookeo"  # ← AMÉLIORÉ
+            echo "✅ Bookeo deployment completed successfully!"
