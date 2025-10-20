@@ -2,25 +2,20 @@ name: Test SSH Connection
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:  
+    branches: [ main ]  
+  workflow_dispatch:
 
 jobs:
   test-ssh:
     runs-on: ubuntu-latest
     steps:
-      - name: 🔑 Test SSH vers VPS
+      - name: 🔑 Test SSH minimal
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
           script: |
-            echo "✅ CONNEXION SSH RÉUSSIE !"
-            echo "Utilisateur: $(whoami)"
-            echo "Dossier: $(pwd)"
-            echo "=== CONTENU DU DOSSIER BOOKEO ==="
-            cd ~/bookeo && ls -la
-            echo "=== DOCKER ==="
-            docker --version
-            echo "✅ TEST COMPLET RÉUSSI !"
+            echo "✅ CONNEXION RÉUSSIE - Test minimal"
+            whoami
+          timeout: 1m
