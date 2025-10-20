@@ -1,21 +1,24 @@
-name: Test Deploy
+name: Test SSH Connection
 
 on:
-  push:
-    branches: ["main"]
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  test-ssh:
     runs-on: ubuntu-latest
     steps:
-      - name: Test SSH connection
+      - name: 🔑 Test SSH vers VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
           script: |
-            echo "✅ Connexion SSH réussie"
-            cd ~/bookeo && echo "✅ Dossier bookeo accessible"
-            ls -la && echo "✅ Fichiers listés"
-            docker --version && echo "✅ Docker disponible"
+            echo "✅ CONNEXION SSH RÉUSSIE !"
+            echo "Utilisateur: $(whoami)"
+            echo "Dossier: $(pwd)"
+            echo "=== CONTENU DU DOSSIER BOOKEO ==="
+            cd ~/bookeo && ls -la
+            echo "=== DOCKER ==="
+            docker --version
+            echo "✅ TEST COMPLET RÉUSSI !"
