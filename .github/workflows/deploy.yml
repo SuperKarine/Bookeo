@@ -1,40 +1,21 @@
-name: Build, push, and deploy Docker image to the server
+name: Test Deploy
 
 on:
   push:
     branches: ["main"]
-  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 Deploy application
+      - name: Test SSH connection
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
           script: |
-            echo "📁 Switching to Bookeo directory..."
-            cd ~/bookeo
-            
-            echo "⬇️ Pulling latest code..."
-            git pull origin main
-            
-            echo "🐳 Building Docker image locally..."
-            docker build -t bookeo-app .
-            
-            echo "🛑 Stopping existing containers..."
-            docker compose down
-            
-            echo "🚀 Starting new containers..."
-            docker compose up -d
-            
-            echo "🧹 Cleaning up unused images..."
-            docker image prune -f
-            
-            echo "📦 Checking running containers:"
-            docker ps --filter "name=bookeo"
-            
-            echo "✅ Bookeo deployment completed successfully!"
+            echo "✅ Connexion SSH réussie"
+            cd ~/bookeo && echo "✅ Dossier bookeo accessible"
+            ls -la && echo "✅ Fichiers listés"
+            docker --version && echo "✅ Docker disponible"
