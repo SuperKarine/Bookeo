@@ -10,12 +10,12 @@ class Controller
             if (isset($_GET['controller'])) {
                 switch ($_GET['controller']) {
                     case 'page':
-                        //charger controleur page
+                        //charge controleur page
                         $pageController = new PageController();
                         $pageController->route();
                         break;
                     case 'book':
-                        //charger controleur book
+                        //charge controleur book
                         $pageController = new BookController();
                         $pageController->route();
                         break;

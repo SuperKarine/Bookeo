@@ -10,11 +10,11 @@ class PageController extends Controller
             if (isset($_GET['action'])) {
                 switch ($_GET['action']) {
                     case 'about':
-                        //On appelle la méthode about()
+                        //J'appelle la méthode about()
                         $this->about();
                         break;
                     case 'home':
-                        //charger controleur home
+                        //charge controleur home
                         $this->home();
                         break;
                     default:
@@ -38,7 +38,7 @@ class PageController extends Controller
     */
     protected function about()
     {
-        /* On passe en premier paramètre la page à charger
+        /* Je passe en premier paramètre la page à charger
             et en deuxième un tableau associatif de paramètres
         */
         $this->render('page/about', [
