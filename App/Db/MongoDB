@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Db;
+
+class MongoDB 
+{
+    private $manager = null;
+    private static $_instance = null;
+
+    private function __construct()
+    {
+        
+        
+    }
+
+    public static function getInstance(): self
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new MongoDB();
+        }
+        return self::$_instance;
+    }
+
+    public function getManager(): \MongoDB\Driver\Manager
+    {
+        if (is_null($this->manager)) {
+            try {
+                
+                $connectionString = "mongodb://bookeo_admin:Mon-mot-de-passe@bookeo-mongo:27017";
+                
+                $this->manager = new \MongoDB\Driver\Manager($connectionString);
+                
+            } catch (\Exception $e) {
+                throw new \Exception("Erreur de connexion à MongoDB: " . $e->getMessage());
+            }
+        }
+        return $this->manager;
+    }
+
+    public function getDatabase(): string
+    {
+        return 'bookeo'; 
+    }
+
+    public function testConnection(): bool
+    {
+        try {
+            $manager = $this->getManager();
+            $command = new \MongoDB\Driver\Command(['ping' => 1]);
+            $manager->executeCommand('admin', $command);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+}
