@@ -1,4 +1,4 @@
-name: Debug SSH Connection
+name: 🚀 Deploy to VPS
 
 on:
   push:
@@ -6,14 +6,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  debug-ssh:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 🔑 Debug SSH Connection
+      - name: 🔑 Connect & Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_COVOITURAGEECORIDE2 }}
-          script: whoami
-          debug: true
+          script: |
+            echo "🚀 Déploiement en cours..."
+            cd ~/bookeo
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
+            echo "✅ Déploiement réussi !"

@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
-=======
+
 <?php
 
 define('_ROOTPATH_', __DIR__ . '/..');
@@ -7,6 +6,7 @@ define('_ROOTPATH_', __DIR__ . '/..');
 spl_autoload_register();
 
 use App\Controller\Controller;
+
 
 // Détection du contrôleur depuis l'URL 
 $controllerName = $_GET['controller'] ?? 'book';
@@ -21,4 +21,6 @@ if (class_exists($controllerClass)) {
     $controller = new Controller();
     $controller->route();
 }
->>>>>>> Stashed changes
+
+?>
+
